@@ -1,0 +1,151 @@
+
+  
+
+
+<div class="bg-white dark:bg-white/10 m-0 p-0 text-theme-gray dark:text-white/60 text-[15px] rounded-10 relative mb-[25px]">
+  <div class="py-[16px] px-[25px] text-dark dark:text-white/[.87] font-medium text-[17px] border-regular dark:border-white/10 border-b flex items-center justify-between">
+    <h4 class="mb-0 text-lg font-medium text-dark dark:text-white/[.87]">
+      Contracts of {{ (assureId && assures.has(assureId)) ? assures.get(assureId)?.nom : 'Unknown' }} {{ (assureId && assures.has(assureId)) ? assures.get(assureId)?.prenom : 'Unknown' }}
+    </h4>
+    <button (click)="openModal()" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+      Add Contract
+    </button>
+  </div>
+  <div class="p-[25px]">
+    <div class="flex items-center justify-center w-full mt-5 mb-[25px] max-md:flex-col max-md:justify-center gap-[15px]">
+      <div class="relative ml-auto">
+        <input
+        class="h-10 px-[20px] pl-[40px] text-body dark:text-white/60 bg-white dark:bg-white/10 border-normal border-1 dark:border-white/10 rounded-[6px] placeholder-gray-400 focus:outline-none focus:border-normal"
+        type="text"
+        placeholder="Search by policy..."
+        [(ngModel)]="searchQuery"
+        (keyup)="searchContrats()"
+      />
+      
+        <i class="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 fas fa-search"></i>
+      </div>
+    </div>
+    <div class="w-full overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[15px] font-medium border-none rounded-s-[10px] capitalize">ID</th>
+            <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[15px] font-medium border-none capitalize">Policy Number</th>
+            <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[15px] font-medium border-none capitalize">Date of Signature</th>
+            <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[15px] font-medium border-none capitalize">Date of Expiration</th>
+
+            <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[15px] font-medium border-none rounded-e-[10px] capitalize">Actions</th>
+          </tr>
+        </thead>
+        
+
+
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let contrat of contrats | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+            <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[15px]">{{ contrat.id }}</td>
+            <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[15px]">{{ contrat.police }}</td>
+            <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[15px]">{{ contrat.dateSignature | date }}</td>
+            <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[15px]">{{ contrat.dateExpiration | date }}</td>
+           
+            <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[15px]">
+              <div class="flex items-center space-x-2">
+                <button (click)="startEditContrat(contrat)" class="p-2 rounded-md text-orange-600 bg-orange-100 hover:bg-orange-200 focus:outline-none">
+                  <i class="fas fa-edit text-[14px]"></i>
+                </button>
+                <button (click)="deleteContrat(contrat.id)" class="p-2 rounded-md text-red-600 bg-red-100 hover:bg-red-200 focus:outline-none">
+                  <i class="fas fa-trash-alt text-[14px]"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        
+      </table>
+   
+      <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+  <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg max-w-md w-full">
+    <h2 class="text-xl font-semibold mb-4 text-center">{{ isEditing ? 'Edit Contract' : 'Create Contract' }}</h2>
+   
+
+
+
+    <form [formGroup]="contratForm" (ngSubmit)="createOrUpdateContrat()">
+      <div class="mb-4 text-center">
+        <label for="police" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contract Number:</label>
+        <input id="police" formControlName="police" type="text"
+          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <div *ngIf="contratForm.get('police')?.invalid && (contratForm.get('police')?.dirty || contratForm.get('police')?.touched)" class="text-red-600 text-sm">
+          <div *ngIf="contratForm.get('police')?.errors?.required">Contract Number is required.</div>
+        </div>
+      </div>
+      
+      <div class="flex mb-4">
+        <div class="w-1/2 pr-2">
+          <label for="dateSignature" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Signature Date:</label>
+          <input id="dateSignature" formControlName="dateSignature" type="date"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+          <div *ngIf="contratForm.get('dateSignature')?.invalid && (contratForm.get('dateSignature')?.dirty || contratForm.get('dateSignature')?.touched)" class="text-red-600 text-sm">
+            <div *ngIf="contratForm.get('dateSignature')?.errors?.required">Signature Date is required.</div>
+          </div>
+        </div>
+        <div class="w-1/2 pl-2">
+          <label for="dateExpiration" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expiration Date:</label>
+          <input id="dateExpiration" formControlName="dateExpiration" type="date"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+          <div *ngIf="contratForm.get('dateExpiration')?.invalid && (contratForm.get('dateExpiration')?.dirty || contratForm.get('dateExpiration')?.touched)" class="text-red-600 text-sm">
+            <div *ngIf="contratForm.get('dateExpiration')?.errors?.required">Expiration Date is required.</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="flex justify-end">
+        <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600">
+          {{ isEditing ? 'Update' : 'Create' }}
+        </button>
+        <button type="button" (click)="closeModal()" class="ml-2 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">
+          Cancel
+        </button>
+      </div>
+    </form>
+    
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 

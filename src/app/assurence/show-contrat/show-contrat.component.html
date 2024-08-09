@@ -1,0 +1,174 @@
+
+
+
+ <div class="bg-white dark:bg-white/10 m-0 p-0 text-theme-gray dark:text-white/60 text-[15px] rounded-10 relative mb-[25px]">
+
+  <div *ngIf="isSuccessMessageVisible" [ngClass]="successMessageClass" class="border px-4 py-3 rounded relative mb-4" role="alert">
+    <strong class="font-bold">{{ successMessage }}</strong>
+  </div>
+  
+
+
+  <div class="py-4 px-6 text-dark dark:text-white/[.87] font-medium text-[17px] border-b dark:border-white/10 flex items-center justify-between">
+    <h4 class="mb-0 text-lg font-medium"></h4>
+    <div class="flex items-center space-x-2">
+      <button (click)="openModal()" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        Add Contract
+      </button>
+    </div>
+  </div>
+
+
+  <div class="p-6 ">
+    <div class="flex flex-wrap items-center gap-4 mb-6">
+      <div class="flex flex-wrap items-center gap-2 flex-grow">
+       
+        <div class="flex items-center space-x-2">
+          <label for="filter" class="text-xs font-medium text-gray-700 dark:text-gray-300">Status:</label>
+          <select id="filter" (change)="onFilterChange($event.target.value)"
+            class="border border-gray-300 rounded-md shadow-sm py-1 px-2 text-xs">
+            <option value="all">All</option>
+            <option value="current">Current</option>
+            <option value="expired">Expired</option>
+          </select>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <label for="startDate" class="text-xs font-medium text-gray-700 dark:text-gray-300">Start Date:</label>
+          <input type="date" id="startDate" [(ngModel)]="startDate"
+            class="border border-gray-300 rounded-md shadow-sm py-1 px-2 text-xs">
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <label for="endDate" class="text-xs font-medium text-gray-700 dark:text-gray-300">End Date:</label>
+          <input type="date" id="endDate" [(ngModel)]="endDate"
+            class="border border-gray-300 rounded-md shadow-sm py-1 px-2 text-xs">
+        </div>
+
+        <div class="flex items-center space-x-2">
+        
+        </div>
+      </div>
+
+   
+      <div class="relative flex-shrink-0 w-full md:w-auto">
+        <input
+          class="h-8 px-2 pl-8 text-body dark:text-white/60 bg-white dark:bg-white/10 border-normal border-1 dark:border-white/10 rounded-[6px] placeholder-gray-400 focus:outline-none focus:border-normal text-xs"
+          type="text"
+          placeholder="Search by policy..."
+          [(ngModel)]="searchQuery"
+          (keyup)="searchByPolice()"
+        />
+        <i class="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 fas fa-search"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="w-full overflow-x-auto">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      
+      <tr>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none rounded-s-[10px] capitalize">Contract ID</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Policy Number</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Date of Signature</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Date of Expiration</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Assure Name</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Assure CIN</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Assure ID</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none rounded-e-[10px] capitalize">Status</th>
+        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none rounded-e-[10px] capitalize">Action</th>
+      </tr>
+    </thead>
+
+    <tbody class="bg-white divide-y divide-gray-200">
+      <tr *ngFor="let contrat of contrats">
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[13px]">{{ contrat.id }}</td>
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[13px]">{{ contrat.police }}</td>
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[13px]">{{ contrat.dateSignature | date }}</td>
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[13px]">{{ contrat.dateExpiration | date }}</td>
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[13px]">{{ contrat.assure.nom }}</td>
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[13px]">{{ contrat.assure.cin }}</td>
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[13px]">{{ contrat.assure.id }}</td>
+        <td class="px-[20px] py-4 text-[15px]"
+          [ngClass]="{
+            'text-green-500': getStatus(contrat.dateExpiration) === 'Current',
+            'text-red-500': getStatus(contrat.dateExpiration) === 'Expired'
+          }">
+          {{ getStatus(contrat.dateExpiration) }}
+        </td>
+        <td class="px-[20px] py-4 text-dark dark:text-white/[.87] text-[15px]">
+          <div class="flex items-center space-x-2">
+            <button (click)="editContrat(contrat)" class="p-2 rounded-md text-orange-600 bg-orange-100 hover:bg-orange-200 focus:outline-none">
+              <i class="fas fa-edit text-[14px]"></i>
+            </button>
+            <button (click)="deleteContrat(contrat.id)" class="p-2 rounded-md text-red-600 bg-red-100 hover:bg-red-200 focus:outline-none">
+              <i class="fas fa-trash-alt text-[14px]"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>  
+ 
+
+
+  
+
+
+
+
+
+
+<!-- Modal de création -->
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+  <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg max-w-md w-full">
+    <h2 class="text-xl font-semibold mb-4 text-center">Create Contract</h2>
+    <form #form="ngForm">
+      <div class="mb-4">
+        <label for="police" class="block text-gray-700 dark:text-gray-300">Police:</label>
+        <input id="police" name="police" [(ngModel)]="newContrat.police" class="border rounded p-2 w-full" />
+      </div>
+      <div class="mb-4">
+        <label for="dateSignature" class="block text-gray-700 dark:text-gray-300">Date Signature:</label>
+        <input id="dateSignature" name="dateSignature" type="date" [(ngModel)]="newContrat.dateSignature" class="border rounded p-2 w-full" />
+      </div>
+      <div class="mb-4">
+        <label for="dateExpiration" class="block text-gray-700 dark:text-gray-300">Date Expiration:</label>
+        <input id="dateExpiration" name="dateExpiration" type="date" [(ngModel)]="newContrat.dateExpiration" class="border rounded p-2 w-full" />
+      </div>
+      <div class="mb-4">
+        <label for="prenom" class="block text-gray-700 dark:text-gray-300">First Name:</label>
+        <input id="prenom" name="prenom" [(ngModel)]="newAssure.prenom" class="border rounded p-2 w-full" />
+      </div>
+      <div class="mb-4">
+        <label for="nom" class="block text-gray-700 dark:text-gray-300">Last Name:</label>
+        <input id="nom" name="nom" [(ngModel)]="newAssure.nom" class="border rounded p-2 w-full" />
+      </div>
+      <div class="mb-4">
+        <label for="cin" class="block text-gray-700 dark:text-gray-300">CIN:</label>
+        <input id="cin" name="cin" [(ngModel)]="newAssure.cin" class="border rounded p-2 w-full" />
+      </div>
+      <div class="mb-4">
+        <label for="dateNaissance" class="block text-gray-700 dark:text-gray-300">Date of Birth:</label>
+        <input id="dateNaissance" name="dateNaissance" type="date" [(ngModel)]="newAssure.dateNaissance" class="border rounded p-2 w-full" />
+      </div>
+
+      <div *ngIf="isFormInvalid" class="mb-4 text-red-500">
+        <p>Please fill out all required fields.</p>
+      </div>
+
+      <div class="flex justify-between">
+        <button (click)="createContrat()" 
+          class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          {{ isEditing ? 'Update' : 'Create' }}
+        </button>
+
+        <button type="button" (click)="closeModal()" class="bg-gray-500 text-white p-2 rounded">Close</button>
+      </div>
+    </form>
+  </div>
+</div>
+
