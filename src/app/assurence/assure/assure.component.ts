@@ -107,11 +107,11 @@ export class AssureComponent implements OnInit {
     this.successMessage = message;
     this.isSuccessMessageVisible = true;
 
-    // Définir la classe en fonction de l'action
+    
     if (action === 'add') {
       this.successMessageClass = 'bg-green-100  text-green-700';
     } else if (action === 'update') {
-      this.successMessageClass = 'p-2 rounded-md text-orange-600 bg-orange-100 hover:bg-orange-200 focus:outline-none'; // Remplacez par la couleur souhaitée
+      this.successMessageClass = 'p-2 rounded-md text-orange-600 bg-orange-100 hover:bg-orange-200 focus:outline-none';
     }
 
     setTimeout(() => {
@@ -139,7 +139,7 @@ export class AssureComponent implements OnInit {
  
   editAssureDetails(assure: Assure): void {
     this.editAssure = assure;
-    // Mettez à jour les valeurs du formulaire
+    
     this.assureForm.setValue({
       nom: assure.nom,
       prenom: assure.prenom,
@@ -147,7 +147,7 @@ export class AssureComponent implements OnInit {
       dateNaissance: assure.dateNaissance
     });
     this.openModal();
-    this.closeMenu(); // Assurez-vous que le menu est fermé après l'édition
+    this.closeMenu(); 
   }
   
 
@@ -161,7 +161,7 @@ export class AssureComponent implements OnInit {
     this.isModalOpen = false;
     this.newAssure = new Assure();
     this.editAssure = null;
-    // this.assureForm.reset();
+  
 
 
   
@@ -236,7 +236,7 @@ export class AssureComponent implements OnInit {
     this.assureService.deleteAssure(id).subscribe(() => {
       this.getAllAssures();
       this.closeModal();
-      this.closeMenu(); // Ensure the menu is closed after deletion
+      this.closeMenu(); 
     });
   }
   

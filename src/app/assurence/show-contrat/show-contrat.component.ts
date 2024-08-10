@@ -13,6 +13,8 @@ import { Contrat } from 'src/app/class/contrat';
 import { Assure } from 'src/app/class/assure';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-show-contrat',
@@ -30,8 +32,7 @@ export class ShowContratComponent implements OnInit {
   isEditing: boolean = false;
   editedContratId: number | null = null;
   today: Date = new Date();
-  // p: number = 1;
-  // itemsPerPage: number = 3;
+
   assureId: number | null = null;
  
   assures: Map<number, { nom: string, prenom: string }> = new Map();
@@ -40,22 +41,18 @@ export class ShowContratComponent implements OnInit {
   isSuccessMessageVisible: boolean = false;
   successMessageClass: string = '';
 
-  sortCriteria: string = 'id'; 
 
-  sortOrder: string = 'asc'; // Assurez-vous que la valeur par défaut est correcte
-
+  sortOrder: string = 'asc'; 
 
 
 
 
-  // sortOrder: 'asc' | 'desc' = 'asc'; // Added for sorting
-  status: string = 'all';  // Valeur par défaut
+  
+  status: string = 'all';  
 
 
 
 
-  // startDate: Date | null = null;
-  // endDate: Date | null = nulls
   
   startDate: string = '';
   endDate: string = '';
@@ -74,7 +71,11 @@ export class ShowContratComponent implements OnInit {
   // sortOrder: string = 'asc';
 
 
-  
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+
+  sortCriteria: string = 'dateSignature';
   
 
   constructor(
@@ -84,6 +85,28 @@ export class ShowContratComponent implements OnInit {
     private router: Router
   ) { }
 
+
+  sort(column: string): void {
+    if (this.sortColumn === column) {
+      
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+     
+      this.sortDirection = 'asc';
+    }
+    this.sortColumn = column;
+    this.sortData();
+  }
+
+  sortData(): void {
+    this.contrats.sort((a, b) => {
+      const valueA = a[this.sortColumn];
+      const valueB = b[this.sortColumn];
+      const compare = valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      return this.sortDirection === 'asc' ? compare : -compare;
+    });
+  }
+
   ngOnInit(): void {
     this.loadContrats();
   }
@@ -91,16 +114,36 @@ export class ShowContratComponent implements OnInit {
 
 
 
-  loadContrats(status?: string): void {
-    console.log('Loading contracts with status:', status, 'and sortOrder:', this.sortOrder, 'and sortCriteria:', this.sortCriteria);
+
+
   
-    if (status === undefined) {
-      console.warn('Status is undefined');
+  loadContrats(): void {
+    console.log('Loading contracts with status:', this.status, 'and sortOrder:', this.sortOrder, 'and sortCriteria:', this.sortCriteria);
+  
+    let observable: Observable<Contrat[]>;
+  
+    switch (this.sortCriteria) {
+      case 'dateSignature':
+        observable = this.contratService.getContratsSortedByDateSignature(this.sortOrder);
+        break;
+      case 'dateExpiration':
+        observable = this.contratService.getContratsSortedByDateExpiration(this.sortOrder);
+        break;
+      case 'police':
+        observable = this.contratService.getContratsSortedByPolice(this.sortOrder);
+        break;
+      case 'id':
+        observable = this.contratService.getContratsSortedById(this.sortOrder);
+        break;
+      case 'cin':
+        observable = this.contratService.getContratsSortedByCin(this.sortOrder);
+        break;
+      default:
+        observable = this.contratService.getAllContrats(); 
     }
   
-    this.contratService.getContratsFiltered(status, this.selectedAssureId).subscribe(
+    observable.subscribe(
       (data) => {
-        console.log('Contracts fetched:', data);
         this.contrats = data;
         this.loadAssuresForContrats();
       },
@@ -110,29 +153,30 @@ export class ShowContratComponent implements OnInit {
   
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
   
   
   onFilterChange(status: string): void {
-    this.loadContrats(status === 'all' ? undefined : status);
+    this.status = status;
+    this.loadContrats();
   }
+ 
+
+
+  
+  // onFilterChange(status: string): void {
+  //   this.loadContrats(status === 'all' ? undefined : status);
+  // }
+  changeSortOrder(order: string): void {
+    this.sortOrder = order;
+    this.loadContrats();
+  }
+
+  changeSortCriteria(criteria: string): void {
+    this.sortCriteria = criteria;
+    this.loadContrats();
+  }
+
+
   
 
   
@@ -163,6 +207,9 @@ export class ShowContratComponent implements OnInit {
     });
   }
 
+
+  
+
   openModal(): void {
     this.isModalOpen = true;
   }
@@ -182,13 +229,7 @@ export class ShowContratComponent implements OnInit {
     return new Date(dateExpiration) < this.today ? 'Expired' : 'Current';
   }
 
-  // updatePagination(): void {
-  //   this.assureService.getAssureCount().subscribe(count => {
-  //     if (count > this.itemsPerPage && this.p === 1) {
-  //       this.p = 2;
-  //     }
-  //   });
-  // }
+
 
 
 
@@ -335,7 +376,7 @@ export class ShowContratComponent implements OnInit {
     this.contratService.getContratsExpiringAfter(periodType).subscribe(
       (data: Contrat[]) => {
         this.contrats = data;
-        // this.sortContrats();  // Assurez-vous que la méthode `sortContrats` trie correctement
+       
       },
       (error) => console.error('Error fetching contracts by expiration', error)
     );

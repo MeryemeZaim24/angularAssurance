@@ -1,0 +1,16 @@
+.fa {
+    font-family: FontAwesome;
+  }
+  
+  .fa-sort-up::before {
+    content: "\f062"; /* Code de la flèche vers le haut */
+  }
+  
+  .fa-sort-down::before {
+    content: "\f063"; /* Code de la flèche vers le bas */
+  }
+
+
+
+  
+  

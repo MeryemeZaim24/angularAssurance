@@ -66,22 +66,65 @@
 </div>
 
 
+
+
+
+
+
+
+
+
+
+
 <div class="w-full overflow-x-auto">
   <table class="min-w-full divide-y divide-gray-200">
+   
+
+
+
+
+    
+   
     <thead class="bg-gray-50">
-      
       <tr>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none rounded-s-[10px] capitalize">Contract ID</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Policy Number</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Date of Signature</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Date of Expiration</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Assure Name</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Assure CIN</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none capitalize">Assure ID</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none rounded-e-[10px] capitalize">Status</th>
-        <th class="bg-regularBG dark:bg-[#323440] px-[20px] py-[16px] text-start text-dark dark:text-white/[.87] text-[14px] font-medium border-none rounded-e-[10px] capitalize">Action</th>
+        <th (click)="sort('id')" class="cursor-pointer">
+          Contract ID
+          <i *ngIf="sortColumn === 'id'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th (click)="sort('police')" class="cursor-pointer">
+          Policy Number
+          <i *ngIf="sortColumn === 'police'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th (click)="sort('dateSignature')" class="cursor-pointer">
+          Date of Signature
+          <i *ngIf="sortColumn === 'dateSignature'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th (click)="sort('dateExpiration')" class="cursor-pointer">
+          Date of Expiration
+          <i *ngIf="sortColumn === 'dateExpiration'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th (click)="sort('assureName')" class="cursor-pointer">
+          Assure Name
+          <i *ngIf="sortColumn === 'assureName'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th (click)="sort('assureCin')" class="cursor-pointer">
+          Assure CIN
+          <i *ngIf="sortColumn === 'assureCin'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th (click)="sort('assureId')" class="cursor-pointer">
+          Assure ID
+          <i *ngIf="sortColumn === 'assureId'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th (click)="sort('status')" class="cursor-pointer">
+          Status
+          <i *ngIf="sortColumn === 'status'" [ngClass]="{'fa-sort-up': sortDirection === 'asc', 'fa-sort-down': sortDirection === 'desc'}" class="fa"></i>
+        </th>
+        <th>Action</th>
       </tr>
     </thead>
+    
+
+
 
     <tbody class="bg-white divide-y divide-gray-200">
       <tr *ngFor="let contrat of contrats">

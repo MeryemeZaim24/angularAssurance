@@ -7,7 +7,7 @@ import {Assure}from '../class/assure'
 })
 export class AssureService {
   private baseUrl = 'http://localhost:8080/api/assures';
-  // private baseUrl = 'http://localhost:8081/api/assures';
+
 
 
 
@@ -31,7 +31,7 @@ export class AssureService {
 
   getContratsByAssureId(assureId: number): Observable<any[]> {
     return this.http.get<any[]>(`http://localhost:8080/api/contrats/assure/${assureId}`);
-    // return this.http.get<any[]>(`http://localhost:8083/api/contrats/assure/${assureId}`);
+ 
   }
   searchAssures(keyword: string): Observable<Assure[]> {
     return this.http.get<Assure[]>(`${this.baseUrl}/search?keyword=${keyword}`);
@@ -47,6 +47,14 @@ export class AssureService {
   }
   getAssureById(assureId: number): Observable<Assure> {
     return this.http.get<Assure>(`${this.baseUrl}/${assureId}`);
+  }
+
+
+
+  getAssuresSortedByCin(sortOrder: string): Observable<Assure[]> {
+    return this.http.get<Assure[]>(`${this.baseUrl}/sortedByCin`, {
+      params: { sortOrder }
+    });
   }
 
 }
