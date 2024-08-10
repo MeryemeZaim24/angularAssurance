@@ -60,5 +60,10 @@ public class AssureController {
 
 
 
+    @GetMapping("/sortedByCin")
+    public List<Assure> getAssuresSortedByCin(@RequestParam String sortOrder) {
+        return assureService.findAllSortedByCin(sortOrder);
+    }
+
 
 }

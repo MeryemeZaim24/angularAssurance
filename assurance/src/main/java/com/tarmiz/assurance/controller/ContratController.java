@@ -2,7 +2,12 @@ package com.tarmiz.assurance.controller;
 
 import com.tarmiz.assurance.model.Contrat;
 import com.tarmiz.assurance.service.ContratService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.tarmiz.assurance.repository.ContratRepository;
@@ -10,6 +15,21 @@ import com.tarmiz.assurance.repository.ContratRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+
+
+
+
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 
 @RestController
 @RequestMapping("/api/contrats")
@@ -120,7 +140,62 @@ public class ContratController {
 
 
 
+//    @GetMapping("/paginated")
+//    public ResponseEntity<Page<Contrat>> getPaginatedContrats(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Contrat> contratsPage = contratService.getContrats(pageable);
+//        return ResponseEntity.ok(contratsPage);
+//    }
 
 
-    // Autres endpoints pour gérer les contrats
+
+    @GetMapping("/pagination")
+    public Page<Contrat> getContrats(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return contratService.getContrats(pageable);
+    }
+
+
+
+    @GetMapping("/sorted")
+    public List<Contrat> getContratsSorted(@RequestParam(defaultValue = "asc") String sortOrder) {
+        System.out.println("Sort order: " + sortOrder);
+        return contratService.getContratsSortedById(sortOrder);
+    }
+
+
+    @GetMapping("/sortedByDateSignature")
+    public ResponseEntity<List<Contrat>> getContratsSortedByDateSignature(@RequestParam(defaultValue = "asc") String sortOrder) {
+        List<Contrat> contrats = contratService.getContratsSortedByDateSignature(sortOrder);
+        return ResponseEntity.ok(contrats);
+    }
+
+
+    @GetMapping("/sortedByDateExpiration")
+    public List<Contrat> getContratsSortedByDateExpiration(@RequestParam String sortOrder) {
+        return contratService.findAllSortedByDateExpiration(sortOrder);
+    }
+
+
+    @GetMapping("/sortedByPolice")
+    public List<Contrat> getContratsSortedByPolice(@RequestParam String sortOrder) {
+        return contratService.findAllSortedByPolice(sortOrder);
+    }
+
+
+    @GetMapping("/sortedById")
+    public List<Contrat> getContratsSortedById(@RequestParam String sortOrder) {
+        return contratService.findAllSortedById(sortOrder);
+    }
+
+
+
+
+
+
+
 }

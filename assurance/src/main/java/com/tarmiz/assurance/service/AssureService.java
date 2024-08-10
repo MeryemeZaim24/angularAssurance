@@ -73,5 +73,13 @@ public class AssureService {
 
 
 
-    // Autres méthodes pour créer, mettre à jour, supprimer des assurés et des contrats
+
+
+    public List<Assure> findAllSortedByCin(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return assureRepository.findAllByOrderByCinDesc();
+        } else {
+            return assureRepository.findAllByOrderByCinAsc();
+        }
+    }
 }

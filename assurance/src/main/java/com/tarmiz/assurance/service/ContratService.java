@@ -4,12 +4,31 @@ import com.tarmiz.assurance.model.Contrat;
 import com.tarmiz.assurance.model.Assure;
 import com.tarmiz.assurance.repository.ContratRepository;
 import com.tarmiz.assurance.repository.AssureRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class ContratService {
@@ -30,6 +49,11 @@ public class ContratService {
 
         return contratRepository.findAll();
     }
+    public Page<Contrat> getContrats(Pageable pageable) {
+        return contratRepository.findAll(pageable);
+    }
+
+
     public Optional<Contrat> getContratById(Long id) {
 
         return contratRepository.findById(id);
@@ -99,6 +123,49 @@ public class ContratService {
         contrat.setAssure(assure);
         return contratRepository.save(contrat);
     }
+
+
+
+    public List<Contrat> getContratsSortedById(String sortOrder) {
+        System.out.println("Sorting by ID: " + sortOrder);
+        Sort sort = Sort.by(Sort.Order.by("id"));
+        sort = sortOrder.equalsIgnoreCase("desc") ? sort.descending() : sort.ascending();
+        return contratRepository.findAll(sort);
+    }
+
+
+
+    public List<Contrat> getContratsSortedByDateSignature(String sortOrder) {
+        Sort sort = Sort.by(Sort.Order.by("dateSignature"));
+        sort = sortOrder.equalsIgnoreCase("desc") ? sort.descending() : sort.ascending();
+        return contratRepository.findAll(sort);
+    }
+
+    public List<Contrat> findAllSortedByDateExpiration(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return contratRepository.findAllByOrderByDateExpirationDesc();
+        } else {
+            return contratRepository.findAllByOrderByDateExpirationAsc();
+        }
+    }
+
+    public List<Contrat> findAllSortedByPolice(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return contratRepository.findAllByOrderByPoliceDesc();
+        } else {
+            return contratRepository.findAllByOrderByPoliceAsc();
+        }
+    }
+
+
+    public List<Contrat> findAllSortedById(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return contratRepository.findAllByOrderByIdDesc();
+        } else {
+            return contratRepository.findAllByOrderByIdAsc();
+        }
+    }
+
 
 
 

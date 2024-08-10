@@ -9,4 +9,10 @@ public interface AssureRepository extends JpaRepository<Assure, Long> {
     List<Assure> findByNomContainingOrPrenomContaining(String nom, String prenom);
 //    List<Assure> findByCin(String cin);
 
+
+
+
+    List<Assure> findAllByOrderByCinAsc();
+
+    List<Assure> findAllByOrderByCinDesc();
 }
