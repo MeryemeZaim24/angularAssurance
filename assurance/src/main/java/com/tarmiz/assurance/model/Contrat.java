@@ -26,4 +26,5 @@ public class Contrat {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assure_id")
     private Assure assure;
+
 }

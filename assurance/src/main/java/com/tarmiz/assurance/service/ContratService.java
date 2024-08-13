@@ -167,6 +167,63 @@ public class ContratService {
     }
 
 
+    public List<Contrat> getContratsSortedByAssureName(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return contratRepository.findAllByAssureNameDesc();
+        } else {
+            return contratRepository.findAllByAssureNameAsc();
+        }
+    }
+
+
+
+    public List<Contrat> findAllSortedByAssureCin(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return contratRepository.findAllByAssureCinDesc();
+        } else {
+            return contratRepository.findAllByAssureCinAsc();
+        }
+    }
+
+
+
+
+    public List<Contrat> findAllSortedByAssureNom(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return contratRepository.findAllByAssureNomDesc();
+        } else {
+            return contratRepository.findAllByAssureNomAsc();
+        }
+    }
+
+
+    public List<Contrat> findAllSortedByAssureId(String sortOrder) {
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            return contratRepository.findAllByAssureIdDesc();
+        } else {
+            return contratRepository.findAllByAssureIdAsc();
+        }
+    }
+
+
+//    public List<Contrat> findContratsByStatus(String status) {
+//        if ("current".equalsIgnoreCase(status)) {
+//            return contratRepository.findCurrentContrats();
+//        } else if ("expired".equalsIgnoreCase(status)) {
+//            return contratRepository.findExpiredContrats();
+//        }
+//        return List.of();
+//    }
+
+
+    public List<Contrat> getContratsByStatus(String status) {
+        return contratRepository.findByStatus(status);
+    }
+
+
+
+
+
 
 
 }

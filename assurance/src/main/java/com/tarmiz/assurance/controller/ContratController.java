@@ -16,20 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-
-
-
-
-
 import org.springframework.web.bind.annotation.RequestParam;
-
-
-
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-
 
 @RestController
 @RequestMapping("/api/contrats")
@@ -139,25 +126,14 @@ public class ContratController {
     }
 
 
-
-//    @GetMapping("/paginated")
-//    public ResponseEntity<Page<Contrat>> getPaginatedContrats(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<Contrat> contratsPage = contratService.getContrats(pageable);
-//        return ResponseEntity.ok(contratsPage);
-//    }
-
-
-
-    @GetMapping("/pagination")
+    @GetMapping("/pagination/contrats")
     public Page<Contrat> getContrats(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return contratService.getContrats(pageable);
     }
+
 
 
 
@@ -191,6 +167,57 @@ public class ContratController {
     public List<Contrat> getContratsSortedById(@RequestParam String sortOrder) {
         return contratService.findAllSortedById(sortOrder);
     }
+
+
+
+    @GetMapping("/sortedByAssureName")
+    public ResponseEntity<List<Contrat>> getContratsSortedByAssureName(
+            @RequestParam(defaultValue = "asc") String sortOrder) {
+        List<Contrat> contrats = contratService.getContratsSortedByAssureName(sortOrder);
+        return ResponseEntity.ok(contrats);
+    }
+
+
+
+
+    @GetMapping("/sortedByAssureCin")
+    public ResponseEntity<List<Contrat>> getContratsSortedByAssureCin(
+            @RequestParam(defaultValue = "asc") String sortOrder) {
+        List<Contrat> contrats = contratService.findAllSortedByAssureCin(sortOrder);
+        return ResponseEntity.ok(contrats);
+    }
+
+
+    @GetMapping("/sortedByAssureNom")
+    public ResponseEntity<List<Contrat>> getContratsSortedByAssureNom(
+            @RequestParam(defaultValue = "asc") String sortOrder) {
+        List<Contrat> contrats = contratService.findAllSortedByAssureNom(sortOrder);
+        return ResponseEntity.ok(contrats);
+    }
+
+
+    @GetMapping("/sortedByAssureId")
+    public ResponseEntity<List<Contrat>> getContratsSortedByAssureId(
+            @RequestParam(defaultValue = "asc") String sortOrder) {
+        List<Contrat> contrats = contratService.findAllSortedByAssureId(sortOrder);
+        return ResponseEntity.ok(contrats);
+    }
+
+
+
+
+
+
+    @GetMapping("/filterByStatus")
+    public List<Contrat> filterContratsByStatus(@RequestParam String status) {
+        return contratService.getContratsByStatus(status);
+    }
+
+
+
+
+
+
 
 
 
