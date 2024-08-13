@@ -1,16 +1,79 @@
-.fa {
+ .fa {
     font-family: FontAwesome;
   }
   
   .fa-sort-up::before {
-    content: "\f062"; /* Code de la flèche vers le haut */
+    content: "\f062"; 
   }
   
   .fa-sort-down::before {
-    content: "\f063"; /* Code de la flèche vers le bas */
+    content: "\f063"; 
   }
 
 
+  th {
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .asc::after {
+    content: "▲";
+    position: absolute;
+    right: 0;
+  }
+  
+  .desc::after {
+    content: "▼";
+    position: absolute;
+    right: 0;
+  } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* .table th, .table td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+  }
+  
+  .table th {
+    background-color: #f3f4f6;
+    color: #4a5568;
+    font-weight: 600;
+  }
+  
+  .table td {
+    background-color: #ffffff;
+    color: #4a5568;
+  }
+  
+  .table th, .table td {
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .table th.cursor-pointer {
+    cursor: pointer;
+  }
+  
+  .table th.cursor-pointer span {
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  
+  
+
 
   
-  
+   */
+
+   

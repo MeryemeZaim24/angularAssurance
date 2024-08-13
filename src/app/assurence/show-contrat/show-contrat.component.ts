@@ -6,6 +6,44 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import { Component, OnInit } from '@angular/core';
 import { ContratService } from 'src/app/folderService/contrat.service';
 import { AssureService } from 'src/app/folderService/assure.service';
@@ -14,6 +52,7 @@ import { Assure } from 'src/app/class/assure';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { Page } from 'src/app/class/page';
 
 
 @Component({
@@ -44,20 +83,11 @@ export class ShowContratComponent implements OnInit {
 
   sortOrder: string = 'asc'; 
 
-
-
-
-  
   status: string = 'all';  
-
-
-
-
-  
-  startDate: string = '';
+startDate: string = '';
   endDate: string = '';
 
-
+  selectedStatus: string = 'current';  // Valeur par défaut
   searchQuery: string = '';
 
 
@@ -72,11 +102,40 @@ export class ShowContratComponent implements OnInit {
 
 
   sortColumn: string = '';
-  sortDirection: 'asc' | 'desc' = 'asc';
+  // sortDirection: 'asc' | 'desc' = 'asc';
 
 
   sortCriteria: string = 'dateSignature';
+
+  periodType: string = 'day';
+
+
+
+  totalElements: number = 0;
+  page: number = 0;
+  size: number = 10;
   
+
+
+
+
+
+
+  
+ 
+  searchPolice: string = '';
+
+
+  // periodType: string = '';
+
+  assuress = []; // Remplacez ceci par votre liste de données
+  sortKey: string = '';
+
+
+  sortDirection: 'asc' | 'desc' = 'asc'; // Valeur initiale par défaut
+
+  sortOrderr: 'asc' | 'desc' = 'asc'; // Valeur par défaut, ajustez si nécessaire
+
 
   constructor(
     private contratService: ContratService,
@@ -98,6 +157,11 @@ export class ShowContratComponent implements OnInit {
     this.sortData();
   }
 
+  
+
+
+
+
   sortData(): void {
     this.contrats.sort((a, b) => {
       const valueA = a[this.sortColumn];
@@ -107,11 +171,13 @@ export class ShowContratComponent implements OnInit {
     });
   }
 
+
+
+  
+
   ngOnInit(): void {
     this.loadContrats();
   }
-
-
 
 
 
@@ -120,45 +186,63 @@ export class ShowContratComponent implements OnInit {
   loadContrats(): void {
     console.log('Loading contracts with status:', this.status, 'and sortOrder:', this.sortOrder, 'and sortCriteria:', this.sortCriteria);
   
-    let observable: Observable<Contrat[]>;
+    const page = this.currentPage;
+    const size = this.pageSize;
+    
+  
+    let observable: Observable<Page<Contrat>>;
+   
   
     switch (this.sortCriteria) {
       case 'dateSignature':
-        observable = this.contratService.getContratsSortedByDateSignature(this.sortOrder);
-        break;
       case 'dateExpiration':
-        observable = this.contratService.getContratsSortedByDateExpiration(this.sortOrder);
-        break;
       case 'police':
-        observable = this.contratService.getContratsSortedByPolice(this.sortOrder);
-        break;
       case 'id':
-        observable = this.contratService.getContratsSortedById(this.sortOrder);
+      
+        observable = this.contratService.getContrats(page, size);
         break;
-      case 'cin':
-        observable = this.contratService.getContratsSortedByCin(this.sortOrder);
-        break;
+     
+       
       default:
-        observable = this.contratService.getAllContrats(); 
+        observable = this.contratService.getContrats(page, size);
     }
   
     observable.subscribe(
-      (data) => {
-        this.contrats = data;
+      (data: Page<Contrat>) => {
+        this.contrats = data.content; // Assurez-vous que votre réponse a une propriété `content`
+        this.totalPages = data.totalPages;
+        this.totalItems = data.totalElements;
         this.loadAssuresForContrats();
+        this.onFilterByStatus(this.selectedStatus)
       },
       (error) => console.error('Error fetching contracts', error)
     );
   }
   
 
-
-  
-  
-  onFilterChange(status: string): void {
-    this.status = status;
+  goToPage(page: number): void {
+    if (page < 0 || page >= this.totalPages) {
+      return; // Page hors des limites
+    }
+    this.currentPage = page;
     this.loadContrats();
   }
+  
+ pagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i);
+  }
+
+  
+  getStatus(dateExpiration: Date): string {
+    return new Date(dateExpiration) < this.today ? 'Expired' : 'Current';
+  }
+  
+  // onFilterChange(status: string): void {
+  //   this.status = status;
+  //   this.loadContrats();
+  // }
+
+  
  
 
 
@@ -174,26 +258,65 @@ export class ShowContratComponent implements OnInit {
   changeSortCriteria(criteria: string): void {
     this.sortCriteria = criteria;
     this.loadContrats();
+    
   }
 
 
   
+  loadContratsSortedByAssureCin(sortOrder: string) {
+    this.contratService.getContratsSortedByAssureCin(sortOrder).subscribe(
+      (contrats) => {
+        this.contrats = contrats;
+        // Vous pouvez également afficher un message de succès ici si nécessaire
+        // this.successMessage = 'Contrats triés par CIN avec succès!';
+        this.isSuccessMessageVisible = true;
+      },
+      (error) => {
+        console.error('Erreur lors du tri des contrats:', error);
+        // Afficher un message d'erreur si nécessaire
+        this.successMessage = 'Erreur lors du tri des contrats.';
+        this.isSuccessMessageVisible = true;
+      }
+    );
+  }
 
-  
+  loadContratsSortedByAssureNom(sortOrder: string) {
+    this.contratService.getContratsSortedByAssureNom(sortOrder).subscribe(
+      (contrats) => {
+        this.contrats = contrats;
+        // this.successMessage = 'Contrats triés par nom d’assuré avec succès!';
+        this.isSuccessMessageVisible = true;
+      },
+      (error) => {
+        console.error('Erreur lors du tri des contrats:', error);
+        this.successMessage = 'Erreur lors du tri des contrats.';
+        this.isSuccessMessageVisible = true;
+      }
+    );
+  }
+
+
  
 
- 
-  
-  
- 
-  
-
-  
 
 
-  
+  loadContratsSortedByAssureId(sortOrder: string) {
+    this.contratService.getContratsSortedByAssureId(sortOrder).subscribe(
+      (contrats) => {
+        this.contrats = contrats;
+        // this.successMessage = 'Contrats triés par assure_id avec succès!';
+        this.isSuccessMessageVisible = true;
+      },
+      (error) => {
+        console.error('Erreur lors du tri des contrats:', error);
+        this.successMessage = 'Erreur lors du tri des contrats.';
+        this.isSuccessMessageVisible = true;
+      }
+    );
+  }
 
-  loadAssuresForContrats(): void {
+
+ loadAssuresForContrats(): void {
     this.assuresMap.clear();
     this.contrats.forEach(contrat => {
       if (contrat.assure.id && !this.assuresMap.has(contrat.assure.id)) {
@@ -208,6 +331,7 @@ export class ShowContratComponent implements OnInit {
   }
 
 
+  
   
 
   openModal(): void {
@@ -224,16 +348,6 @@ export class ShowContratComponent implements OnInit {
   }
 
   
-
-  getStatus(dateExpiration: Date): string {
-    return new Date(dateExpiration) < this.today ? 'Expired' : 'Current';
-  }
-
-
-
-
-
-
   editContrat(contrat: Contrat): void {
     this.isEditing = true;
     this.editedContratId = contrat.id;
@@ -366,11 +480,6 @@ export class ShowContratComponent implements OnInit {
       );
     }
   }
-  
-
-
-
-
 
   filterContratsByExpiration(periodType: string): void {
     this.contratService.getContratsExpiringAfter(periodType).subscribe(
@@ -381,11 +490,7 @@ export class ShowContratComponent implements OnInit {
       (error) => console.error('Error fetching contracts by expiration', error)
     );
   }
-
-
-
-
-  searchByPolice(): void {
+ searchByPolice(): void {
     this.contratService.searchContratsByPolice(this.searchQuery).subscribe(
       (data) => this.contrats = data,
       (error) => console.error('Error searching contracts', error)
@@ -394,7 +499,124 @@ export class ShowContratComponent implements OnInit {
 
 
 
+  loadContratsByStatus(status: string): void {
+    console.log('Loading contracts with status:', status, 'and sortOrder:', this.sortOrder);
+  
+    const page = this.currentPage;
+    const size = this.pageSize;
+  
+    let observable: Observable<Page<Contrat>>;
+    observable = this.contratService.getContratsFiltered(
+      status !== 'all' ? status : undefined,
+      undefined, // Assure ID est undefined dans cet exemple. Remplacez-le si nécessaire.
+      this.sortOrderr
+    );
+
+
+
+  
+  
+    observable.subscribe(
+      (data: Page<Contrat>) => {
+        this.contrats = data.content; // Assurez-vous que votre réponse a une propriété `content`
+        this.totalPages = data.totalPages;
+        this.totalItems = data.totalElements;
+        this.loadAssuresForContrats();
+      },
+      (error) => console.error('Error fetching contracts', error)
+    );
+  }
+  
+
+  onFilterChange(status: string): void {
+    this.status = status;
+    this.loadContratsByStatus(status);
+  }
+
+
+
+  filterContrats(): void {
+    if (this.startDate && this.endDate) {
+      this.contratService.filterContratsByDateRange(this.startDate, this.endDate)
+        .subscribe(
+          (data: Contrat[]) => {
+            this.contrats = data;
+          },
+          (error) => {
+            console.error('Error fetching contracts', error);
+          }
+        );
+    }
+  }
+
+
+
+  // onFilterByStatus(status: string) {
+  //   this.selectedStatus = status;
+  //   this.contratService.getContratsByStatus(status)
+  //     .subscribe(
+  //       (data: Contrat[]) => {
+  //         this.contrats = data;
+  //       },
+  //       error => {
+  //         console.error('Erreur lors de la récupération des contrats', error);
+  //       }
+  //     );
+  // }
+
+  onFilterByStatus(status: string) {
+    this.selectedStatus = status;
+    this.contratService.getContratsByStatus(status)
+      .subscribe(
+        (data: Contrat[]) => {
+          this.contrats = data;
+        },
+        error => {
+          console.error('Erreur lors de la récupération des contrats', error);
+        }
+      );
+  }
+
+
+  
+
+
+  
+  
+
+
+  fetchContrats(): void {
+    this.contratService.getContratsByExpiration(this.periodType).subscribe(
+      (data: Contrat[]) => {
+        this.contrats = data;
+      },
+      error => {
+        console.error('Error fetching contracts:', error);
+      }
+    );
+  }
+
+  onPeriodChange(newPeriodType: string): void {
+    this.periodType = newPeriodType;
+    this.fetchContrats();
+  }
+
+
+
+
+
+  
+
+
+
+  
+  
+  
+  
+
+
 }
+
 
 
 
